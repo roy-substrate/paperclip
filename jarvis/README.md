@@ -1,115 +1,251 @@
-# J.A.R.V.I.S.
+<p align="center">
+  <img src="https://img.shields.io/badge/J.A.R.V.I.S.-Claude_Code-blue?style=for-the-badge" alt="JARVIS for Claude Code" />
+  <img src="https://img.shields.io/badge/node-%3E%3D18-green?style=for-the-badge" alt="Node >= 18" />
+  <img src="https://img.shields.io/badge/zero-dependencies-orange?style=for-the-badge" alt="Zero Dependencies" />
+  <img src="https://img.shields.io/badge/license-MIT-purple?style=for-the-badge" alt="MIT License" />
+</p>
 
-**Just A Rather Very Intelligent System** — A voice notification assistant for Claude Code.
+<h1 align="center">J.A.R.V.I.S.</h1>
+<p align="center"><strong>Just A Rather Very Intelligent System</strong></p>
+<p align="center">
+  A voice assistant for <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a> that speaks to you like Tony Stark's AI butler.<br/>
+  Announces task completions, errors, permission requests, session events — all in classic Jarvis style.
+</p>
 
-Jarvis speaks aloud when important events happen during your Claude Code session: task completions, permission requests, errors, session start/end, and more. Think Iron Man's AI butler, but for your terminal.
+---
 
-## Quick Start
+## Demo
 
-```bash
-# Install hooks into Claude Code
-node jarvis/bin/jarvis.mjs install
+```
+$ jarvis install
+[JARVIS] Hook installation complete.
+  Added: 11 hooks
+  Node: /opt/homebrew/bin/node
+  Settings: /Users/you/.claude/settings.json
 
-# Restart Claude Code — Jarvis is now active
-
-# Test voice output
-node jarvis/bin/jarvis.mjs test
-
-# Uninstall when done
-node jarvis/bin/jarvis.mjs uninstall
+[JARVIS] Restart Claude Code for hooks to take effect.
 ```
 
-## How It Works
+Then open Claude Code and hear:
 
-Jarvis uses [Claude Code hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) — shell commands that fire automatically on lifecycle events. The installer adds hook entries to `~/.claude/settings.json` that call `jarvis-hook.mjs` with event data via stdin.
+> *"Good day, sir. All systems are online and at your disposal."*
 
-### Events Handled
+When a task completes:
 
-| Event | What Jarvis Says |
+> *"Finished, sir. Rather efficiently, if I may say so. Completed 12 operations in 45 seconds."*
+
+When something breaks:
+
+> *"I'm afraid we've hit a snag, sir. TypeError: Cannot read property 'x' of undefined"*
+
+---
+
+## Install
+
+```bash
+# Clone and install globally (one command)
+git clone https://github.com/roy-substrate/paperclip.git && cd paperclip/jarvis && npm install -g .
+
+# Or if you already have the repo
+cd paperclip/jarvis && npm install -g .
+```
+
+Then:
+
+```bash
+jarvis install     # Wire up Claude Code hooks
+jarvis test        # Hear Jarvis speak
+```
+
+**Restart Claude Code** (Cmd+Q and reopen) for hooks to take effect.
+
+Works in **Terminal CLI** and **Desktop App**.
+
+---
+
+## What It Does
+
+Jarvis listens to **11 Claude Code lifecycle events** and speaks context-aware messages:
+
+| Event | What You Hear |
 |---|---|
-| **SessionStart** | Greeting ("All systems online, sir.") |
-| **SessionEnd** | Farewell ("Signing off, sir.") |
-| **Stop** | Task summary with tool count and elapsed time |
-| **StopFailure** | API error announcement |
-| **Notification** | Permission prompt (debounced to 10s) |
-| **PermissionRequest** | Tool-specific approval request |
-| **PreToolUse** | Agent dispatch announcement (Agent tool only) |
-| **PostToolUse** | Build/test result (Bash tool only) |
-| **PostToolUseFailure** | Error description |
-| **SubagentStop** | Sub-agent completion |
-| **PreCompact** | Long-running task update |
+| **Session starts** | *"Welcome back, sir. Shall we build something extraordinary today?"* |
+| **Task completes** | *"All done, sir. Completed 8 operations in 30 seconds."* |
+| **Permission needed** | *"Your authorization is needed. A terminal command is awaiting permission."* |
+| **Error occurs** | *"We have a situation, sir. Module not found..."* |
+| **Build/test runs** | *"Build successful, sir. All green."* |
+| **Agent dispatched** | *"Delegating to a specialist, sir. Code review."* |
+| **Session ends** | *"Signing off, sir. The code will be here when you return."* |
+| **API error** | *"Something has gone sideways, sir. Rate limit exceeded."* |
+| **Long-running task** | *"It's been 5 minutes, sir. This is a rather demanding operation."* |
+| **Sub-agent done** | *"Sub-agent dispatch complete. Explore has completed its work."* |
+| **Context compaction** | *"Still working on it, sir. Shouldn't be much longer."* |
+
+Every message has **5-6 randomized variants** so it never gets repetitive.
+
+---
 
 ## Voice Engines
 
-Jarvis tries voice engines in this order:
+Jarvis tries these in order:
 
-1. **ElevenLabs API** — Premium AI voice (requires API key)
-2. **System TTS** — Platform-native fallback:
-   - **macOS**: `say` command (Daniel voice, rate 180)
-   - **Linux**: `espeak-ng` → `espeak` → `spd-say` → `piper`
-   - **Windows**: PowerShell SAPI
-3. **Stderr** — If no TTS is available, messages print to stderr
-
-## Configuration
-
-All configuration is via environment variables:
-
-| Variable | Default | Description |
+| Priority | Engine | Setup |
 |---|---|---|
-| `ELEVENLABS_API_KEY` | *(none)* | ElevenLabs API key for premium voice |
-| `JARVIS_VOICE_ID` | `onwK4e9ZLuTAKqWW03F9` | ElevenLabs voice ID (default: Daniel) |
-| `JARVIS_MODEL` | `eleven_turbo_v2_5` | ElevenLabs model |
-| `JARVIS_MACOS_VOICE` | `Daniel` | macOS `say` voice name |
-| `JARVIS_MACOS_RATE` | `180` | macOS `say` speech rate |
+| 1 | **ElevenLabs** | Set `ELEVENLABS_API_KEY` env var |
+| 2 | **macOS `say`** | Works out of the box (Daniel voice) |
+| 3 | **Linux TTS** | `apt install espeak-ng` |
+| 4 | **stderr** | Prints message if no TTS available |
+
+### ElevenLabs (Premium AI Voice)
+
+```bash
+export ELEVENLABS_API_KEY="sk_your_key_here"
+jarvis install   # Saves key for desktop app too
+```
+
+Get a key at [elevenlabs.io](https://elevenlabs.io). Free tier works.
+
+### macOS (Free, No Setup)
+
+Works immediately on any Mac. Uses the built-in `say` command with the Daniel voice at rate 180.
+
+```bash
+# Customize voice (optional)
+export JARVIS_MACOS_VOICE="Daniel"
+export JARVIS_MACOS_RATE="180"
+```
+
+### Linux
+
+```bash
+sudo apt install espeak-ng   # Best free option
+# Or: sudo apt install espeak
+# Or: sudo apt install speech-dispatcher
+```
+
+---
 
 ## CLI Commands
 
-```
-jarvis test        — Test voice engine with a greeting
-jarvis install     — Install Claude Code hooks
-jarvis uninstall   — Remove Claude Code hooks
-jarvis status      — Show current configuration
-jarvis say <text>  — Speak arbitrary text
-jarvis help        — Show help
+```bash
+jarvis install     # Install Claude Code hooks
+jarvis uninstall   # Remove all hooks
+jarvis test        # Test voice engine
+jarvis status      # Show config and voice engine
+jarvis say "text"  # Speak anything
+jarvis help        # Show help
 ```
 
-## Architecture
+---
+
+## How It Works
+
+```
+Claude Code Event (e.g. "task complete")
+        |
+        v
+~/.claude/settings.json hooks
+        |
+        v
+jarvis-hook.mjs [event-type]
+  - Reads JSON payload from stdin
+  - Picks message from personality.mjs
+  - Sends to voice.mjs
+        |
+        v
+voice.mjs
+  - ElevenLabs API? -> stream audio
+  - macOS? -> `say -v Daniel`
+  - Linux? -> espeak-ng / espeak / spd-say
+```
+
+### Architecture
 
 ```
 jarvis/
 ├── bin/
-│   ├── jarvis.mjs      # CLI entry point
-│   ├── install.mjs      # Hook installer
-│   └── uninstall.mjs    # Hook uninstaller
+│   ├── jarvis.mjs        # CLI entry point
+│   ├── install.mjs       # Hook installer (resolves absolute node path)
+│   └── uninstall.mjs     # Hook uninstaller
 ├── hooks/
-│   └── jarvis-hook.mjs  # Unified hook handler (all events)
+│   └── jarvis-hook.mjs   # Unified handler for all 11 events
 ├── src/
-│   ├── voice.mjs        # TTS engine (ElevenLabs + system fallback)
-│   └── personality.mjs  # Message generator (Jarvis-style wit)
-└── package.json
+│   ├── voice.mjs         # TTS engine (ElevenLabs + system fallback)
+│   └── personality.mjs   # Message library (Jarvis-style wit)
+├── package.json
+├── LICENSE
+└── README.md
 ```
 
-### Key Design Decisions
+### Key Design Choices
 
-- **Single hook handler** — One script (`jarvis-hook.mjs`) handles all events, reading the event type from `argv[2]` and payload from stdin JSON.
-- **State tracking** — A temp file (`/tmp/jarvis-state.json`) tracks session start time, tool count, and debounce timestamps across hook invocations.
-- **Always exits 0** — The hook never blocks Claude Code, even if TTS fails.
-- **Debounced notifications** — Notification events are throttled to once per 10 seconds to prevent spam.
-- **Smart filtering** — Only announces "big" events: Agent dispatches (not every file read), build/test commands (not every `ls`).
+- **Zero dependencies** — Only uses Node.js built-in modules
+- **Single hook handler** — One script handles all 11 events
+- **Always exits 0** — Never blocks Claude Code, even if TTS fails
+- **Smart filtering** — Only announces significant events (builds, agents), not every file read
+- **10s debounce** — Notifications are throttled to prevent spam
+- **Desktop app support** — Resolves absolute `node` path and persists env vars to `~/.claude/jarvis-env.json`
+- **State tracking** — Tracks session time and tool count via `/tmp/jarvis-state.json`
 
-## Installing a TTS Engine (Linux)
+---
+
+## Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `ELEVENLABS_API_KEY` | — | ElevenLabs API key for premium voice |
+| `JARVIS_VOICE_ID` | `onwK4e9ZLuTAKqWW03F9` | ElevenLabs voice ID |
+| `JARVIS_MODEL` | `eleven_turbo_v2_5` | ElevenLabs model |
+| `JARVIS_MACOS_VOICE` | `Daniel` | macOS `say` voice name |
+| `JARVIS_MACOS_RATE` | `180` | macOS `say` speech rate |
+
+---
+
+## Uninstall
 
 ```bash
-# Best quality free option
-sudo apt install espeak-ng
-
-# Alternative
-sudo apt install espeak
-
-# Or for speech-dispatcher
-sudo apt install speech-dispatcher
+jarvis uninstall          # Remove hooks from Claude Code
+npm uninstall -g jarvis-claude-code  # Remove the CLI
 ```
+
+---
+
+## Requirements
+
+- **Node.js >= 18**
+- **Claude Code** (CLI, Desktop App, or VS Code extension)
+- **macOS / Linux / Windows** (macOS has best out-of-box voice support)
+
+---
+
+## Troubleshooting
+
+**No sound in Desktop App?**
+Run `jarvis uninstall && jarvis install` in Terminal, then Cmd+Q and reopen the desktop app. The installer resolves the absolute path to `node` so the desktop app can find it.
+
+**ElevenLabs 401 error?**
+Your API key needs the `text_to_speech` permission. Check your plan at elevenlabs.io. Jarvis falls back to system TTS automatically.
+
+**Linux no sound?**
+Install a TTS engine: `sudo apt install espeak-ng`
+
+**Want different personality?**
+Edit `src/personality.mjs` — each function has an array of message variants. Add your own style.
+
+---
+
+## Contributing
+
+PRs welcome. The code is simple — six files, zero dependencies, all ESM.
+
+---
 
 ## License
 
-Part of the [Paperclip](https://github.com/roy-substrate/paperclip) project.
+MIT
+
+---
+
+<p align="center">
+  <em>"At your service, sir."</em>
+</p>
