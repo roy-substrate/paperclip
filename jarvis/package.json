@@ -7,10 +7,30 @@
   "bin": {
     "jarvis": "./bin/jarvis.mjs"
   },
+  "files": [
+    "bin/",
+    "hooks/",
+    "src/",
+    "README.md"
+  ],
   "scripts": {
     "install-hooks": "node bin/install.mjs",
     "uninstall-hooks": "node bin/uninstall.mjs",
     "test-voice": "node bin/jarvis.mjs test"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "jarvis",
+    "voice",
+    "tts",
+    "hooks",
+    "ai-assistant"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roy-substrate/paperclip",
+    "directory": "jarvis"
   },
   "dependencies": {},
   "engines": {
