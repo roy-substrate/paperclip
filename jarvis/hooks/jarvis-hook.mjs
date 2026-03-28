@@ -13,9 +13,23 @@
 
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import fs from "node:fs";
+import os from "node:os";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(__dirname, "..", "src");
+
+// Load env vars from ~/.claude/jarvis-env.json (for desktop app support)
+// Desktop apps don't inherit shell env vars, so the installer saves them here.
+try {
+  const envFile = path.join(os.homedir(), ".claude", "jarvis-env.json");
+  const envData = JSON.parse(fs.readFileSync(envFile, "utf8"));
+  for (const [key, value] of Object.entries(envData)) {
+    if (!process.env[key]) process.env[key] = value;
+  }
+} catch {
+  // No env file or parse error — that's fine, use process.env as-is
+}
 
 // Dynamic import so paths resolve correctly
 const { speak } = await import(path.join(srcDir, "voice.mjs"));
@@ -40,8 +54,6 @@ function readStdin() {
 }
 
 // ── State file for tracking long-running ops ────────────
-import fs from "node:fs";
-import os from "node:os";
 
 const STATE_FILE = path.join(os.tmpdir(), "jarvis-state.json");
 
