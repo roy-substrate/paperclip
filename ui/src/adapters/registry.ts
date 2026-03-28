@@ -6,6 +6,7 @@ import { geminiLocalUIAdapter } from "./gemini-local";
 import { hermesLocalUIAdapter } from "./hermes-local";
 import { openCodeLocalUIAdapter } from "./opencode-local";
 import { piLocalUIAdapter } from "./pi-local";
+import { gstackLocalUIAdapter } from "./gstack-local";
 import { openClawGatewayUIAdapter } from "./openclaw-gateway";
 import { processUIAdapter } from "./process";
 import { httpUIAdapter } from "./http";
@@ -17,6 +18,7 @@ const uiAdapters: UIAdapterModule[] = [
   hermesLocalUIAdapter,
   openCodeLocalUIAdapter,
   piLocalUIAdapter,
+  gstackLocalUIAdapter,
   cursorLocalUIAdapter,
   openClawGatewayUIAdapter,
   processUIAdapter,

@@ -29,6 +29,7 @@ type AdvancedAdapterType =
   | "gemini_local"
   | "opencode_local"
   | "pi_local"
+  | "gstack_local"
   | "cursor"
   | "openclaw_gateway"
   | "hermes_local";
@@ -77,6 +78,12 @@ const ADVANCED_ADAPTER_OPTIONS: Array<{
     label: "Pi",
     icon: Terminal,
     desc: "Local Pi agent",
+  },
+  {
+    value: "gstack_local",
+    label: "gstack",
+    icon: Sparkles,
+    desc: "Claude Code + 28 AI agents",
   },
   {
     value: "cursor",

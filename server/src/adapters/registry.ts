@@ -67,6 +67,15 @@ import {
   agentConfigurationDoc as piAgentConfigurationDoc,
 } from "@paperclipai/adapter-pi-local";
 import {
+  execute as gstackExecute,
+  testEnvironment as gstackTestEnvironment,
+  sessionCodec as gstackSessionCodec,
+} from "@paperclipai/adapter-gstack-local/server";
+import {
+  agentConfigurationDoc as gstackAgentConfigurationDoc,
+  models as gstackModels,
+} from "@paperclipai/adapter-gstack-local";
+import {
   execute as hermesExecute,
   testEnvironment as hermesTestEnvironment,
   sessionCodec as hermesSessionCodec,
@@ -174,6 +183,17 @@ const piLocalAdapter: ServerAdapterModule = {
   agentConfigurationDoc: piAgentConfigurationDoc,
 };
 
+const gstackLocalAdapter: ServerAdapterModule = {
+  type: "gstack_local",
+  execute: gstackExecute,
+  testEnvironment: gstackTestEnvironment,
+  sessionCodec: gstackSessionCodec,
+  sessionManagement: getAdapterSessionManagement("gstack_local") ?? undefined,
+  models: gstackModels,
+  supportsLocalAgentJwt: true,
+  agentConfigurationDoc: gstackAgentConfigurationDoc,
+};
+
 const hermesLocalAdapter: ServerAdapterModule = {
   type: "hermes_local",
   execute: hermesExecute,
@@ -193,6 +213,7 @@ const adaptersByType = new Map<string, ServerAdapterModule>(
     codexLocalAdapter,
     openCodeLocalAdapter,
     piLocalAdapter,
+    gstackLocalAdapter,
     cursorLocalAdapter,
     geminiLocalAdapter,
     openclawGatewayAdapter,
