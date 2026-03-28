@@ -1,0 +1,19 @@
+{
+  "name": "jarvis-claude-code",
+  "version": "1.0.0",
+  "description": "J.A.R.V.I.S. — Voice notification system for Claude Code. Speaks to you with classic Jarvis personality when tasks complete, permissions are needed, errors occur, and more.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "jarvis": "./bin/jarvis.mjs"
+  },
+  "scripts": {
+    "install-hooks": "node bin/install.mjs",
+    "uninstall-hooks": "node bin/uninstall.mjs",
+    "test-voice": "node bin/jarvis.mjs test"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
